@@ -32,17 +32,17 @@ var DHTMLSpinner = new Class({
 		this.target = null;
 		this.timer = null;
 		this.root_element = new Element('div',{
-			class: 'dhtmlspin_layer',
-			styles:{
-				position: 'absolute',
-				top: 0,
-				left: 0,
+			'class': 'dhtmlspin_layer',
+			'styles': {
+				'position': 'absolute',
+				'top': 0,
+				'left': 0,
 				'z-index': 10000
 			}
 		});
 
 		this.container_element = new Element('div',{
-			class: 'dhtmlspin_container'
+			'class': 'dhtmlspin_container'
 		});
 
 		this.root_element.grab(this.container_element);
@@ -52,10 +52,10 @@ var DHTMLSpinner = new Class({
 		for(var i=0;i<this.options['nb_subdivision'];i++){
 			for(var j=0;j<this.options['nb_subdivision'];j++){
 				var newblock = new Element('div',{
-					class: 'dhtmlspin_element',
-					styles:{
-						float: 'left',
-						opacity: 0.0
+					'class': 'dhtmlspin_element',
+					'styles': {
+						'float': 'left',
+						'opacity': 0.0
 					}
 				});
 				newblock.store('tweenelement', new Fx.Tween(newblock, {'duration': duration, 'fps': this.options['fps']}));
