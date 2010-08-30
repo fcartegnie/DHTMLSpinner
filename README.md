@@ -29,5 +29,3 @@ The spinner can be rebound to another element at anytime
 
 	#JS
 	spinner.setTarget('otherspinnable');
-
-Please note that target elements will host the overlay, and will have their `position` style set to `relative` if none.

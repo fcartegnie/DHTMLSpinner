@@ -12,7 +12,7 @@ DHTMLSpinner Method: constructor {#DHTMLSpinner:constructor}
 
 ### Arguments:
 
-1. target - (*element*) the overlayed element.
+1. target - (*element* or *id*) the overlayed element.
 2. options - (*object* optional) see below.
 
 ### Options:
@@ -22,6 +22,7 @@ DHTMLSpinner Method: constructor {#DHTMLSpinner:constructor}
 * fps - (*integer*, defaults to `5`) Value passed to the blocks opacity fx effect.
 * max_size - (*integer*, defaults to `0.6`) Maximum spinner size within the target element. Defaults to 60% (`0.6`).
 * opacity - (*integer*, defaults to `0.8`) Spinner's overlay opacity value. Defaults to 80% (`0.8`).
+* storage - (*element* or *id*) DHTML Spinner HTML storage. Defaults to document.body.
 
 ### Returns:
 

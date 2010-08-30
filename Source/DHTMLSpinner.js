@@ -23,7 +23,8 @@ var DHTMLSpinner = new Class({
 		duration: Fx.Durations['short'],
 		fps: 5,
 		max_size: 0.6,
-		opacity: 0.8
+		opacity: 0.8,
+		storage: null
 	},
 
 	initialize: function(el, options){
@@ -31,6 +32,7 @@ var DHTMLSpinner = new Class({
 		this.path_index = 0;
 		this.target = null;
 		this.timer = null;
+		this.options.storage = document.id(this.options.storage) || document.id(document.body);
 		this.root_element = new Element('div',{
 			'class': 'dhtmlspin_layer',
 			'styles': {
@@ -47,24 +49,23 @@ var DHTMLSpinner = new Class({
 
 		this.root_element.grab(this.container_element);
 
-		var duration = (Math.pow(this.options['nb_subdivision'], 2) / 2) * this.options['duration'];
+		var block_count = Math.pow(this.options['nb_subdivision'], 2);
+		var duration = (block_count / 2) * this.options['duration'];
 
-		for(var i=0;i<this.options['nb_subdivision'];i++){
-			for(var j=0;j<this.options['nb_subdivision'];j++){
-				var newblock = new Element('div',{
-					'class': 'dhtmlspin_element',
-					'styles': {
-						'float': 'left',
-						'opacity': 0.0
-					}
-				});
-				newblock.store('tweenelement', new Fx.Tween(newblock, {'duration': duration, 'fps': this.options['fps']}));
-				this.container_element.grab(newblock);
-			}
+		for(var i=0;i<block_count;i++){
+			var newblock = new Element('div',{
+				'class': 'dhtmlspin_element',
+				'styles': {
+					'float': 'left',
+					'opacity': 0.0
+				}
+			});
+			newblock.store('tweenelement', new Fx.Tween(newblock, {'duration': duration, 'fps': this.options['fps']}));
+			this.container_element.grab(newblock);
 		}
 
 		/* define walking path */
-		this.path = new Array( Math.pow(this.options['nb_subdivision'], 2) - Math.pow(this.options['nb_subdivision']-2, 2) );
+		this.path = new Array( block_count - Math.pow(this.options['nb_subdivision']-2, 2) );
  		/* outer square minus inner square */
  		i=0;
 		for(j=0;j<this.options['nb_subdivision'];j++) { this.path[i++] = j; }
@@ -73,6 +74,7 @@ var DHTMLSpinner = new Class({
 		for(j=this.options['nb_subdivision']-1;j>1;j--) { this.path[i++] = (this.options['nb_subdivision']*j)-this.options['nb_subdivision']; }
 
 		this.setTarget(el);
+		this.options.storage.grab(this.root_element, 'bottom');
 		window.addEvent('resize', this.adaptSize.bind(this));
 		this.root_element.setStyle('visibility', 'hidden');
 	},
@@ -82,31 +84,30 @@ var DHTMLSpinner = new Class({
 		/* clean up if we reattach somewhere else */
 			this.target.removeEvent('resize', this.adaptSize.bind(this));
 		this.target = document.id(el);
-		if (this.target.getStyle('position') != 'absolute')
-			this.target.setStyle('position', 'relative');
-		this.target.adopt(this.root_element);
 		this.adaptSize();
 		this.target.addEvent('resize', this.adaptSize.bind(this));
 		return this;
 	},
 
 	adaptSize: function() {
-		var referenceCoords = this.target.getCoordinates();
+		var referenceCoords = this.target.getCoordinates(this.options.storage);
 		this.width = referenceCoords.width;
 		this.height = referenceCoords.height;
-		this.root_element.setStyle('width', '100%');
-		this.root_element.setStyle('height', '100%');
+		this.root_element.setStyles(referenceCoords);
 
 		var bestsize = Math.min(this.width, this.height) * this.options['max_size'];
-		this.container_element.setStyle('width', bestsize);
-		this.container_element.setStyle('height', bestsize);
-		this.container_element.setStyle('margin-left', Math.floor((this.width - bestsize) / 2));
-		this.container_element.setStyle('margin-right', Math.floor((this.width - bestsize) / 2));
-		this.container_element.setStyle('margin-top', Math.floor((this.height - bestsize) / 2));
+
+		this.container_element.setStyles({
+			'width': bestsize,
+			'height': bestsize,
+			'margin-left': Math.floor((this.width - bestsize) / 2),
+			'margin-right': Math.floor((this.width - bestsize) / 2),
+			'margin-top': Math.floor((this.height - bestsize) / 2)
+		});
+
 		var blocksize = Math.floor(bestsize / this.options['nb_subdivision']);
 		this.container_element.getChildren().each(function(e){
-			e.setStyle('width', blocksize);
-			e.setStyle('height', blocksize);
+			e.setStyles({'width': blocksize, 'height': blocksize});
 		});
 		return this;
 	},
@@ -127,8 +128,7 @@ var DHTMLSpinner = new Class({
 		if (this.timer == null)
 		{
 			this.adaptSize();
-			this.root_element.setStyle('opacity', 0.0);
-			this.root_element.setStyle('visibility', 'visible');
+			this.root_element.setStyles({'opacity': 0.0, 'visibility': 'visible'});
 			this.root_element.tween('opacity', 0.0, this.options['opacity']);
 			this.timer = this.spinHandler.periodical(this.options['duration'], this);
 			return true;
