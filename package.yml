@@ -1,6 +1,7 @@
 name: DHTMLSpinner
 author: fcartegnie
 category: Effects
+current: 1.1
 tags: [element, spinner, ajax]
 demo: http://fcartegnie.github.com/DHTMLSpinner/
 docs: http://github.com/fcartegnie/DHTMLSpinner/blob/master/Docs/DHTMLSpinner.md 
